@@ -1,26 +1,29 @@
-def select_first_license(self):
-    print("🔹 Opening Taskhub License dropdown...")
-    self.license_dropdown.click()
+def click_delete_role(self, role_name):
+    print(f"🗑️ Clicking delete for role '{role_name}'...")
 
-    # Wait for the dropdown panel
-    panel = self.page.wait_for_selector(".mat-mdc-select-panel", timeout=5000)
+    safe_name = role_name.replace(" ", "\\ ")
 
-    # Collect options
-    options = self.page.locator(".mat-mdc-option")
-    count = options.count()
+    delete_btn = self.page.locator(f"#superadmin-roles-{safe_name}-action-delete-btn")
+    delete_btn.wait_for(state="visible", timeout=10000)
+    delete_btn.click()
 
-    print(f"📌 Found {count} license options:")
-    for i in range(count):
-        print("   ➜", options.nth(i).inner_text())
+    print("🟢 Delete button clicked.")
+def confirm_delete_role(self):
+    print("🔹 Confirming delete...")
 
-    if count == 0:
-        raise Exception("❌ No license options found!")
+    confirm_btn = self.page.locator("#delete-accept-btn")
+    confirm_btn.wait_for(state="visible", timeout=10000)
+    confirm_btn.click()
 
-    # Click the first option (DO NOT close popup)
-    options.nth(0).click()
-    print("✅ License selected.")
+    print("🟢 Delete confirmed.")
+    self.page.wait_for_timeout(2000)
+def verify_role_not_in_table(self, role_name):
+    print(f"🔍 Checking that role '{role_name}' is removed...")
 
-    # Wait for dropdown panel to disappear (normal behavior)
-    self.page.wait_for_selector(".mat-mdc-select-panel", state="hidden", timeout=5000)
+    # Allow table to reload
+    self.page.wait_for_timeout(3000)
 
-    print("🟢 License dropdown closed, popup still open and ready to Create.")
+    table_text = self.page.locator("table").inner_text().lower()
+
+    assert role_name.lower() not in table_text, f"❌ Role '{role_name}' is still present!"
+    print(f"✅ Role '{role_name}' successfully removed from table.")
