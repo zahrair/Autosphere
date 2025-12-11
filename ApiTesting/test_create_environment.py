@@ -2,7 +2,7 @@ from playwright.sync_api import sync_playwright
 from api_client import APIClient
 import random, string
 
-BASE_URL = "http://172.30.2.94:8080"
+BASE_URL = "http://192.168.1.202:8080"
 
 
 # -----------------------------------------
@@ -25,7 +25,7 @@ def test_create_environment():
     token = client.login("superadmin", "Admin@1234")
   # SAVE TO FILE so delete test can read it
     
-    env_name = f"myenvironmenttest_{random_suffix()}"
+    env_name = f"myenvironmenttest{random_suffix()}"
     with open("created_env.txt", "w") as f:
         f.write(env_name)
     payload = {

@@ -2,7 +2,7 @@ import json
 from playwright.sync_api import sync_playwright
 from api_client import APIClient
 
-BASE_URL = "http://172.30.2.94:8080"
+BASE_URL = "http://172.25.235.110:8080/#/robots/"   # <-- keep without #/
 
 def test_create_queue():
 
@@ -10,12 +10,13 @@ def test_create_queue():
     token = client.login("superadmin", "Admin@1234")
 
     payload = {
-        "queueName": "1qqqqqqqqqqqqqqqqqqqqq",
+        "queueName": "queue12333",
         "description": "",
         "MaxNoOfRetries": "0",
-        "encrypted": 0,
+        "encrypted": "0",
+        "AutoRetry": "0",
         "id": "",
-        "sla": 0,
+        "sla": "0",
         "Hdays": "",
         "Hhours": "",
         "Hmints": "",
@@ -25,28 +26,25 @@ def test_create_queue():
         "Ldays": "",
         "Lhours": "",
         "Lmints": "",
-        "uniqueReference": 0,
-        "reference": 0,
+        "uniqueReference": "0",
+        "reference": "0",
         "environment": "zahra"
     }
-
-    json_payload = json.dumps(payload)
 
     with sync_playwright() as p:
         request_context = p.request.new_context(
             base_url=BASE_URL,
-            extra_http_headers={
-                "Authorization": f"Bearer {token}"
-                # IMPORTANT: Do NOT set Content-Type manually for form data
-            }
+            extra_http_headers={"Authorization": f"Bearer {token}"}
         )
 
         response = request_context.post(
             "/queue/env/zahra/create",
-            form={"data": json_payload}   # <-- THIS IS THE FIX
+            multipart={"data": json.dumps(payload)}
         )
 
-        print("\nSTATUS:", response.status)
-        print("RESPONSE:", response.json())
+        print("STATUS:", response.status)
+        print("RAW TEXT:", response.text())
+        print("HEADERS:", response.headers)
+        print("REQUEST SENT:", json.dumps(payload, indent=2))
 
-        assert response.status == 200, f"Queue creation failed! Status: {response.status}"
+        assert response.status == 200

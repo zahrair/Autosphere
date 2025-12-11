@@ -1,7 +1,7 @@
 from playwright.sync_api import sync_playwright
 import pytest
 
-BASE_URL = "http://172.30.2.94:8080"
+BASE_URL = "https://192.168.1.236:8080"
 
 
 # ---------------------------------------------------------
